@@ -120,12 +120,6 @@ blast(Context * const context, const char * const name, const uint16_t type)
     return 0;
 }
 
-static void
-usage(void) {
-    puts("\nUsage: dnsblast [fuzz] <host> [<count>] [<pps>] [<port>]\n");
-    exit(EXIT_SUCCESS);
-}
-
 static struct addrinfo *
 resolve(const char * const host, const char * const port)
 {
@@ -149,14 +143,12 @@ get_random_name(char * const name, size_t name_size)
 {
     const char charset_alnum[36] = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-    assert(name_size > (size_t) 8U);
-    const int r1 = rand(), r2 = rand();
+    assert(name_size > (size_t) 6U);
+    const int r1 = rand();
     name[0] = charset_alnum[(r1) % sizeof charset_alnum];
     name[1] = charset_alnum[(r1 >> 16) % sizeof charset_alnum];
-    name[2] = charset_alnum[(r2) % sizeof charset_alnum];
-    name[3] = charset_alnum[(r2 >> 16) % sizeof charset_alnum];
-    name[4] = '.';    name[5] = 'c';    name[6] = 'o';    name[7] = 'm';
-    name[8] = 0;
+    name[2] = '.';    name[3] = 'c';    name[4] = 'o';    name[5] = 'm';
+    name[6] = 0;
 
     return 0;
 }
@@ -317,12 +309,12 @@ throttled_receive(Context * const context)
 }
 
 int
-main(int argc, char *argv[])
+main(void)
 {
-    char             name[100U] = ".";
+    char             name[10U] = ".";
     Context          context;
     struct addrinfo *ai;
-    const char      *host;
+    const char      *host = "::1";
     const char      *port = "domain";
     unsigned long    pps        = ULONG_MAX;
     unsigned long    send_count = ULONG_MAX;
@@ -330,27 +322,10 @@ main(int argc, char *argv[])
     uint16_t         type;
     _Bool            fuzz = 0;
 
-    if (argc < 2 || argc > 6) {
-        usage();
-    }
-    if (strcasecmp(argv[1], "fuzz") == 0) {
-        fuzz = 1;
-        argv++;
-        argc--;
-    }
-    if (argc < 1) {
-        usage();
-    }
-    host = argv[1];
-    if (argc > 2) {
-        send_count = strtoul(argv[2], NULL, 10);
-    }
-    if (argc > 3) {
-        pps = strtoul(argv[3], NULL, 10);
-    }
-    if (argc > 4) {
-        port = argv[4];
-    }
+    // Use standard settings
+    send_count = ULONG_MAX;
+    pps = 2000;
+
     if ((sock = get_sock(host, port, &ai)) == -1) {
         perror("Oops");
         exit(EXIT_FAILURE);

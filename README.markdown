@@ -1,4 +1,20 @@
-DNSBlast
+DNSBlast(modified for Pi-hole tests)
+========
+
+Usage: 
+1. Clone repository
+2. Compile: `cd dnsblast; make`
+3. Execute: `./dnsblast`
+
+The hard-coded test parameters are:
+
+- randomly chosen two letter domains + ".com" for generating > 65,000 unique domains
+- mixture of 50% `A` and `50%` `AAAA` queries
+- target-rate query rate is 2500 requests per second
+- querying `localhost` (`::1`)
+
+Original description below (partially invalid for the modified version)
+
 ========
 
 `dnsblast` is a simple and really stupid load testing tool for DNS resolvers.
@@ -113,4 +129,3 @@ To send malformed packets, prepend "fuzz":
 
 If you think that it desperately cries for `getopt()`, you're
 absolutely correct.
-
